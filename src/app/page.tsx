@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import Select from "react-select";
+import { ActionMeta, OnChangeValue } from "react-select";
+
 
 interface ApiResponse {
   alphabets?: string[];
@@ -42,15 +44,26 @@ function App() {
       const data = await apiResponse.json() as ApiResponse;
       console.log("API Response:", data);
       setResponse(data);
-    } catch (e) {
-      setError("Error: " + e.message);
-      console.error(e);
-    }
+    } 
+    catch (error: unknown) {
+      if (error instanceof Error) {
+          setError("Error: " + error.message);
+          console.error(error);
+      } else {
+          setError("An unknown error occurred");
+          console.error("Unknown error:", error);
+      }
+  }
+  
   };
 
-  const handleDropdownChange = (selectedOptions: Option[]) => {
-    setSelectedOptions(selectedOptions.map((option) => option.value));
+  const handleDropdownChange = (selectedOptions: OnChangeValue<Option, true>, actionMeta: ActionMeta<Option>) => {
+    // Ensure selectedOptions is not null
+    if (selectedOptions) {
+      setSelectedOptions(selectedOptions.map((option) => option.value));
+    }
   };
+  
 
   const renderResponse = () => {
     if (!response) return null;
